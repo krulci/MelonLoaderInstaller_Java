@@ -1,7 +1,0 @@
-Executable : D:\Programs\Android\Sdk\cmake\3.18.1\bin\ninja.exe
-arguments : 
--C
-F:\Projects\GitHub\MelonLoaderInstaller\AndroidInstaller\app\.cxx\RelWithDebInfo\3g596l2w\arm64-v8a
-installer
-jvmArgs : 
-

@@ -1,0 +1,3 @@
+F:/Projects/GitHub/MelonLoaderInstaller/AndroidInstaller/.cxx/Debug/5e2k535w/arm64-v8a/CMakeFiles/installer.dir
+F:/Projects/GitHub/MelonLoaderInstaller/AndroidInstaller/.cxx/Debug/5e2k535w/arm64-v8a/CMakeFiles/edit_cache.dir
+F:/Projects/GitHub/MelonLoaderInstaller/AndroidInstaller/.cxx/Debug/5e2k535w/arm64-v8a/CMakeFiles/rebuild_cache.dir
