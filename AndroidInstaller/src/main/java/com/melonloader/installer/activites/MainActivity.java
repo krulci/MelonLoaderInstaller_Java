@@ -1,8 +1,8 @@
 package com.melonloader.installer.activites;
 
+import android.Manifest;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,21 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.melonloader.installer.ApplicationFinder;
 import com.melonloader.installer.R;
 import com.melonloader.installer.SupportedApplication;
-import com.melonloader.installer.databinding.ActivityMainBinding;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     List<SupportedApplication> supportedApplications;
@@ -46,6 +42,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listview = (ListView) findViewById(R.id.application_list);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(this);
+
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE Manifest.permission.WRITE_EXTERNAL_STORAGE},100);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
