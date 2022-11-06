@@ -86,35 +86,7 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        // BONELAB specific, obviously
-        // Attempting to clarify some stuff before the user actually installs it
-        boolean isWarnable = targetPackageName.equals("com.DefaultCompany.AudioImporterTests") // Test App
-                          || targetPackageName.equals("com.StressLevelZero.BONELAB");
-        if (isWarnable)
-        {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder
-                    .setTitle("BONELAB Warning")
-                    .setMessage("Some mods will NOT function through LemonLoader. " +
-                            "This includes Multiplayer Mockup and possibly Fusion when it releases. " +
-                            "If a mod does not function, do NOT bug the mod creator about it.")
-                    .setIcon(android.R.drawable.ic_dialog_alert);
-
-            AlertDialog alert = builder.create();
-            alert.show();
-            new CountDownTimer(5000,1000) {
-
-                @Override
-                public void onTick(long arg0) {}
-
-                @Override
-                public void onFinish() {
-                    builder.setPositiveButton("Understood", null);
-                    builder.create().show();
-                    alert.hide();
-                }
-            }.start();
-        }
+        CheckWarnings(targetPackageName);
 //    }
 //
 //    @Override
@@ -135,6 +107,40 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
         loggerHelper = new LoggerHelper(this);
         Main._properties.logger = loggerHelper;
+    }
+
+    public void CheckWarnings(String targetPackageName)
+    {
+        // BONELAB specific, obviously
+        // Attempting to clarify some stuff before the user actually installs it
+        boolean isWarnable = targetPackageName.equals("com.DefaultCompany.AudioImporterTests") // Test App
+                || targetPackageName.equals("com.StressLevelZero.BONELAB");
+        if (isWarnable)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setTitle("BONELAB Warning")
+                    .setMessage("Some mods will NOT function through LemonLoader. " +
+                            "This includes Multiplayer Mockup and possibly Fusion when it releases. " +
+                            "If a mod does not function, do NOT bug the mod creator about it.")
+                    .setIcon(android.R.drawable.ic_dialog_alert);
+
+            AlertDialog alert = builder.create();
+            alert.setCancelable(false);
+            alert.show();
+            new CountDownTimer(3500,1000) {
+
+                @Override
+                public void onTick(long arg0) {}
+
+                @Override
+                public void onFinish() {
+                    builder.setPositiveButton("Understood", null);
+                    builder.create().show();
+                    alert.dismiss();
+                }
+            }.start();
+        }
     }
 
     private void requestWritePermission()
