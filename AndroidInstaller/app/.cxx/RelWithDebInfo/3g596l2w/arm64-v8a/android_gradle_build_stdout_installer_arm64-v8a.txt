@@ -1,0 +1,3 @@
+ninja: Entering directory `F:\Projects\GitHub\MelonLoaderInstaller\AndroidInstaller\app\.cxx\RelWithDebInfo\3g596l2w\arm64-v8a'
+[1/2] Building CXX object CMakeFiles/installer.dir/native-lib.cpp.o
+[2/2] Linking CXX shared library F:\Projects\GitHub\MelonLoaderInstaller\AndroidInstaller\app\build\intermediates\cxx\RelWithDebInfo\3g596l2w\obj\arm64-v8a\libinstaller.so

@@ -1,0 +1,7 @@
+[
+{
+  "directory": "F:/Projects/GitHub/MelonLoaderInstaller/AndroidInstaller/app/.cxx/Debug/6k69415j/arm64-v8a",
+  "command": "D:\\Programs\\Android\\Sdk\\ndk\\21.4.7075529\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=aarch64-none-linux-android27 --gcc-toolchain=D:/Programs/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=D:/Programs/Android/Sdk/ndk/21.4.7075529/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dinstaller_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC -o CMakeFiles\\installer.dir\\native-lib.cpp.o -c F:\\Projects\\GitHub\\MelonLoaderInstaller\\AndroidInstaller\\app\\src\\main\\cpp\\native-lib.cpp",
+  "file": "F:\\Projects\\GitHub\\MelonLoaderInstaller\\AndroidInstaller\\app\\src\\main\\cpp\\native-lib.cpp"
+}
+]
