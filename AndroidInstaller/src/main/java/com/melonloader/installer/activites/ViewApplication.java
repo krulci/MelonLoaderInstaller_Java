@@ -1,8 +1,11 @@
 package com.melonloader.installer.activites;
 
+import android.content.DialogInterface;
+import android.os.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
@@ -10,9 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Environment;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
@@ -54,6 +54,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.cert.CertificateException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Observable;
 
 public class ViewApplication extends AppCompatActivity implements View.OnClickListener {
     private SupportedApplication application;
@@ -81,6 +85,36 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // BONELAB specific, obviously
+        // Attempting to clarify some stuff before the user actually installs it
+        boolean isWarnable = targetPackageName.equals("com.DefaultCompany.AudioImporterTests") // Test App
+                          || targetPackageName.equals("com.StressLevelZero.BONELAB");
+        if (isWarnable)
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setTitle("BONELAB Warning")
+                    .setMessage("Some mods will NOT function through LemonLoader. " +
+                            "This includes Multiplayer Mockup and possibly Fusion when it releases. " +
+                            "If a mod does not function, do NOT bug the mod creator about it.")
+                    .setIcon(android.R.drawable.ic_dialog_alert);
+
+            AlertDialog alert = builder.create();
+            alert.show();
+            new CountDownTimer(5000,1000) {
+
+                @Override
+                public void onTick(long arg0) {}
+
+                @Override
+                public void onFinish() {
+                    builder.setPositiveButton("Understood", null);
+                    builder.create().show();
+                    alert.hide();
+                }
+            }.start();
+        }
 //    }
 //
 //    @Override
