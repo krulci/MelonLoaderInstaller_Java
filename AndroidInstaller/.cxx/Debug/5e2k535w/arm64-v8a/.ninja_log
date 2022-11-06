@@ -1,3 +1,3 @@
 # ninja log v5
-1	382	689415622	CMakeFiles/installer.dir/native-lib.cpp.o	830277d1b28069ce
-384	461	689415622	F:/Projects/GitHub/MelonLoaderInstaller/AndroidInstaller/build/intermediates/cxx/Debug/5e2k535w/obj/arm64-v8a/libinstaller.so	e71cdcc4f73c5ef9
+1	354	689448999	CMakeFiles/installer.dir/native-lib.cpp.o	830277d1b28069ce
+355	435	689448999	F:/Projects/GitHub/MelonLoaderInstaller/AndroidInstaller/build/intermediates/cxx/Debug/5e2k535w/obj/arm64-v8a/libinstaller.so	e71cdcc4f73c5ef9
