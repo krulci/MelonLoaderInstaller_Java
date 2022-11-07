@@ -22,6 +22,17 @@ public class Step__05__ExtractDependencies extends InstallerStep {
 
         paths.dexPatch = Paths.get(paths.dependenciesDir.toString(), "dex");
 
+        properties.logger.Log("Extracting il2cpp/etc");
+
+        zipHelper = new ZipHelper(properties.il2cppEtc);
+        files = zipHelper.GetFiles();
+
+        for (String file : files) {
+            zipHelper.QueueExtract(file, Paths.get(paths.dependenciesDir.toString(), file).toString());
+        }
+
+        zipHelper.Extract();
+
         return true;
     }
 }

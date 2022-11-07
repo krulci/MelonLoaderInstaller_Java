@@ -11,6 +11,7 @@ public class Properties {
     public String outputApk;
     public String tempDir;
     public String dependencies;
+    public String il2cppEtc;
 
     public String unityProvider = "https://lemon.sircoolness.dev/android/";
     public String unityVersion;

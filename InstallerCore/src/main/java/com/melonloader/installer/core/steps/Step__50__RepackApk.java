@@ -28,6 +28,9 @@ public class Step__50__RepackApk extends InstallerStep {
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "assembly_generation"), "*.dll", "assets/melonloader/etc/assembly_generation/managed");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "native"), "*.so", "lib/arm64-v8a");
 
+        // Copy entire /etc/ folder
+        zipHelper.QueueWrite(Paths.get(paths.dependenciesDir.toString(), "etc").toString(), "assets/bin/Data/Managed/etc");
+
         CopyTo(zipHelper, paths.unityManagedBase, "*.dll", "assets/melonloader/etc/assembly_generation/unity");
         CopyTo(zipHelper, Paths.get(paths.unityNativeBase.toString(), "arm64-v8a"), "*.so", "lib/arm64-v8a");
 
