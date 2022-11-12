@@ -24,11 +24,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.melonloader.installer.ApkInstallerHelper;
-import com.melonloader.installer.ApplicationFinder;
-import com.melonloader.installer.BuildConfig;
-import com.melonloader.installer.R;
-import com.melonloader.installer.SupportedApplication;
+import com.melonloader.installer.*;
 import com.melonloader.installer.core.ILogger;
 import com.melonloader.installer.core.Main;
 import com.melonloader.installer.core.Properties;
@@ -214,7 +210,8 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
             loggerHelper.Log("Preparing Assets");
 
-            copyAssets("installer_deps.zip", depsLocation);
+            //copyAssets("installer_deps.zip", depsLocation);
+            DependencyDownloader.Run(depsLocation, loggerHelper);
             copyAssets("zipalign", zipAlignLocation);
             copyAssets("il2cpp_etc.zip", etcLocation);
 
@@ -317,7 +314,7 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    class LoggerHelper implements ILogger {
+    public class LoggerHelper implements ILogger {
         TextView content;
         ScrollView scroller;
         boolean dirty = false;
