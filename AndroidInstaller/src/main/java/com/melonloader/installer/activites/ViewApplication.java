@@ -249,17 +249,27 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 String finalOutputApk = outputApk;
                 runOnUiThread(() -> {
                     installerHelper = new ApkInstallerHelper(this, application.appName);
-                    installerHelper.InstallApk(Paths.get(finalOutputApk).toString());
+                    installerHelper.InstallApk(Paths.get(finalOutputApk).toString(), new Callable() {
+                        @Override
+                        public void call() {
+                            ActionBar actionBar = getSupportActionBar();
+                            actionBar.setDisplayHomeAsUpEnabled(true);
+                            patchButton.setText("PATCHED");
+                            loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
+                    });
                 });
             }
+            else
+            {
+                runOnUiThread(() -> {
+                    ActionBar actionBar = getSupportActionBar();
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                    patchButton.setText("FAILED");
 
-            runOnUiThread(() -> {
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                patchButton.setText(success ? "PATCHED" : "FAILED");
-
-                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
-            });
+                    loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                });
+            }
         });
     }
 

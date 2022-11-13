@@ -1,9 +1,11 @@
 package com.melonloader.installer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -17,8 +19,13 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import com.android.apksig.ApkVerifier;
+import com.melonloader.installer.adbbridge.ADBBridgeHelper;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Signature;
 import java.util.List;
 
@@ -28,6 +35,7 @@ public class ApkInstallerHelper {
 
     String pending = null;
     Runnable next = null;
+    Callable afterInstall = null;
 
     public ApkInstallerHelper(Activity _context, String _packageName)
     {
@@ -35,8 +43,9 @@ public class ApkInstallerHelper {
         packageName = _packageName;
     }
 
-    public void InstallApk(String path)
+    public void InstallApk(String path, Callable doAfterInstall)
     {
+        afterInstall = doAfterInstall;
         next = () -> InternalInstall(path);
         UninstallPackage();
     }
@@ -72,13 +81,40 @@ public class ApkInstallerHelper {
 
     protected void UninstallPackage()
     {
-        context.runOnUiThread(() -> {
-            pending = Intent.ACTION_DELETE;
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder
+                .setTitle("ADB Bridge")
+                .setMessage("Do you want to connect to the Lemon ADB Bridge® to save game data and OBBs, if they exist?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.i("MelonLoader", "Using ADBBridge");
+                        ADBBridgeHelper.AttemptConnect(packageName, new Callable() {
+                            @Override
+                            public void call() {
+                                onActivityResult(1000, 0, null);
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Log.i("MelonLoader", "Not using ADBBridge");
+                        context.runOnUiThread(() -> {
+                            pending = Intent.ACTION_DELETE;
 
-            Intent intent = new Intent(Intent.ACTION_DELETE);
-            intent.setData(Uri.parse("package:" + packageName));
-            context.startActivityForResult(intent, 1000);
-        });
+                            Intent intent = new Intent(Intent.ACTION_DELETE);
+                            intent.setData(Uri.parse("package:" + packageName));
+                            context.startActivityForResult(intent, 1000);
+                        });
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_info);
+
+        AlertDialog alert = builder.create();
+        alert.setCancelable(false);
+        alert.show();
     }
 
     private static Uri uriFromFile(Context context, File file) {
@@ -103,6 +139,9 @@ public class ApkInstallerHelper {
         if (next != null)
             next.run();
 
+        if (afterInstall != null
+        )
+        afterInstall.call();
         next = null;
     }
 }
