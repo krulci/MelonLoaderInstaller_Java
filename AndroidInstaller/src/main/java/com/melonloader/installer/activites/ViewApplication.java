@@ -95,8 +95,8 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         TextView appName = findViewById(R.id.applicationName);
         Button patchButton = findViewById(R.id.patchButton);
         patchButton.setOnClickListener(this);
-        patchButton.setEnabled(!application.patched);
-        patchButton.setText(application.patched ? "PATCHED" : "PATCH");
+        //patchButton.setEnabled(!application.patched);
+        patchButton.setText(application.patched ? "REPATCH" : "PATCH");
 
         appIcon.setImageDrawable(application.icon);
         appName.setText(application.appName);
@@ -153,11 +153,6 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if (application.patched) {
-            Toast.makeText(this, "Application already patched.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         StartPatching();
     }
 

@@ -5,6 +5,7 @@ import com.melonloader.installer.core.InstallerStep;
 import com.melonloader.installer.core.PathDefinitions;
 import com.melonloader.installer.core.Properties;
 import com.melonloader.installer.core.ZipHelper;
+import net.lingala.zip4j.exception.ZipException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -22,7 +23,24 @@ public class Step__00__ExtractDex extends InstallerStep {
     public boolean Run() throws IOException {
         properties.logger.Log("Extracting dex files.");
 
-        Pattern pattern = Pattern.compile("^classes\\d*\\.dex$", Pattern.MULTILINE);
+        net.lingala.zip4j.ZipFile zip = new net.lingala.zip4j.ZipFile(paths.outputAPK.toString());
+
+        String patternStr = "classes\\d*\\.dex$";
+        try {
+            if (zip.getFileHeader("originalDex/classes.dex") != null) {
+                patternStr = "originalDex\\/" + patternStr;
+                properties.hasOriginalDex = true;
+            }
+        } catch (ZipException e) {
+            throw new RuntimeException(e);
+        }
+
+        patternStr = "^" + patternStr;
+        properties.logger.Log("Final Regex: " + patternStr);
+
+        zip.close();
+
+        Pattern pattern = Pattern.compile(patternStr, Pattern.MULTILINE);
 
         ZipHelper zipHelper = new ZipHelper(paths.outputAPK.toString());
 

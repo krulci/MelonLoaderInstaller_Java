@@ -26,4 +26,7 @@ public class Properties {
     public String zipAlign;
 
     public ILogger logger;
+
+    // Repatching stuff
+    public boolean hasOriginalDex;
 }
