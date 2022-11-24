@@ -1,6 +1,7 @@
 package com.melonloader.installer.activites;
 
 import android.content.DialogInterface;
+import android.content.pm.ApplicationInfo;
 import android.os.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -205,8 +206,14 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
             loggerHelper.Log("Preparing Assets");
 
-            //copyAssets("installer_deps.zip", depsLocation);
-            DependencyDownloader.Run(depsLocation, loggerHelper);
+            boolean isDebuggable =  ( 0 != ( getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) );
+
+            loggerHelper.Log("IsDebuggable: " + isDebuggable);
+            if (isDebuggable)
+                copyAssets("installer_deps.zip", depsLocation);
+            else
+                DependencyDownloader.Run(depsLocation, loggerHelper);
+
             copyAssets("zipalign", zipAlignLocation);
             copyAssets("il2cpp_etc.zip", etcLocation);
 
