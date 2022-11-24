@@ -25,6 +25,7 @@ public class Step__50__RepackApk extends InstallerStep {
             CopyTo(zipHelper, paths.dexOriginal, "*.dex", "originalDex");
 
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "core"), "*.dll", "assets/melonloader/etc");
+        CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "managed"), "*.dll", "assets/melonloader/etc/managed");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "mono", "bcl"), "*.dll", "assets/melonloader/etc/managed");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "support_modules"), "*.dll", "assets/melonloader/etc/support");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "assembly_generation"), "*.dll", "assets/melonloader/etc/assembly_generation/managed");
