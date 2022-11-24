@@ -23,7 +23,7 @@ public class ApplicationFinder {
 
         for (ApplicationInfo packageInfo : packages) {
             Intent intent = pm.getLaunchIntentForPackage(packageInfo.packageName);
-            if (intent == null || !intent.getComponent().getClassName().equals("com.unity3d.player.UnityPlayerActivity"))
+            if (intent == null || !intent.getComponent().getClassName().contains("UnityPlayerActivity"))
                 continue;
 
             supportedApplications.add(new SupportedApplication(pm, packageInfo));
