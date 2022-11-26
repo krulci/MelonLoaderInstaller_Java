@@ -259,6 +259,15 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                             patchButton.setText("PATCHED");
                             loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
                         }
+
+                        @Override
+                        public void callOnFail() {
+                            ActionBar actionBar = getSupportActionBar();
+                            actionBar.setDisplayHomeAsUpEnabled(true);
+                            patchButton.setText("FAILED");
+
+                            loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                        }
                     });
                 });
             }

@@ -32,6 +32,9 @@ import java.util.List;
 public class ApkInstallerHelper {
     Activity context;
     String packageName;
+    String lastInstallPath;
+
+    Integer installLoopCount;
 
     String pending = null;
     Runnable next = null;
@@ -41,6 +44,7 @@ public class ApkInstallerHelper {
     {
         context = _context;
         packageName = _packageName;
+        installLoopCount = 0;
     }
 
     public void InstallApk(String path, Callable doAfterInstall)
@@ -52,6 +56,7 @@ public class ApkInstallerHelper {
 
     protected void InternalInstall(String path)
     {
+        lastInstallPath = path;
         AsyncTask.execute(() -> {
             try {
                 Thread.sleep(1000);
@@ -70,13 +75,22 @@ public class ApkInstallerHelper {
                 install.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
                 try {
-                    context.startActivity(install);
+                    context.startActivityForResult(install, 2000);
                 } catch (ActivityNotFoundException e) {
                     e.printStackTrace();
                     Log.e("TAG", "Error in opening the file!");
                 }
             });
         });
+    }
+
+    private boolean isPackageInstalled(String packageName, PackageManager packageManager) {
+        try {
+            packageManager.getPackageInfo(packageName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     protected void UninstallPackage()
@@ -94,6 +108,9 @@ public class ApkInstallerHelper {
                             public void call() {
                                 onActivityResult(1000, 0, null);
                             }
+
+                            @Override
+                            public void callOnFail() {}
                         });
                     }
                 })
@@ -131,17 +148,30 @@ public class ApkInstallerHelper {
 //        if (!data.getAction().equals(pending))
 //            return;
 
-        if (requestCode != 1000)
-            return;
+        if (requestCode == 1000)
+        {
+            pending = null;
 
-        pending = null;
+            if (next != null)
+                next.run();
 
-        if (next != null)
-            next.run();
+            if (afterInstall != null
+            )
+                afterInstall.call();
+            next = null;
+        }
+        if (requestCode == 2000)
+        {
+            if (!isPackageInstalled(packageName, context.getPackageManager())) {
+                if (installLoopCount >= 3) {
+                    afterInstall.callOnFail();
+                    return;
+                }
 
-        if (afterInstall != null
-        )
-        afterInstall.call();
-        next = null;
+                Log.i("melonloader", "Package not installed, attempting installation");
+                installLoopCount++;
+                InternalInstall(lastInstallPath);
+            }
+        }
     }
 }
