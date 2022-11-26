@@ -1,12 +1,11 @@
 ﻿using SharpAdbClient;
-using System.Text;
-using WatsonWebsocket;
+using Websocket.Client;
 
 namespace LemonADBBridge
 {
     internal static class UninstallationHandler
     {
-        private static WatsonWsClient wsClient;
+        private static WebsocketClient wsClient;
         private static AdbClient adbClient;
         private static DeviceData deviceData;
 
@@ -20,17 +19,15 @@ namespace LemonADBBridge
             adbClient.RemoveAllForwards(deviceData);
             adbClient.CreateForward(deviceData, "tcp:9000", "tcp:9000", true);
 
-            mainForm.statusText.Text = "ATTEMPTING CONNECTION...";
+            mainForm.statusText.Text = "WAITING FOR CONNECTION...";
 
-            wsClient = new("localhost", 9000, false);
-            wsClient.KeepAliveInterval = 1000;
-            wsClient.MessageReceived += OnMessageReceived;
-            await wsClient.StartAsync();
+            wsClient = new WebsocketClient(new Uri("ws://localhost:9000"));
+            wsClient.MessageReceived.Subscribe(e => packageToUninstall = e.Text);
 
-            while (!wsClient.Connected)
-            {
-                await Task.Delay(500);
-            }
+            wsClient.ErrorReconnectTimeout = TimeSpan.FromSeconds(3);
+            wsClient.ReconnectTimeout = TimeSpan.FromSeconds(3);
+            wsClient.IsReconnectionEnabled = true;
+            await wsClient.Start();
 
             mainForm.statusText.Text = "CONNECTED";
 
@@ -38,6 +35,8 @@ namespace LemonADBBridge
             {
                 await Task.Delay(500);
             }
+
+            mainForm.statusText.Text = packageToUninstall;
 
             var receiver = new ConsoleOutputReceiver();
 
@@ -49,16 +48,23 @@ namespace LemonADBBridge
             adbClient.ExecuteRemoteCommand($"mv /sdcard/Android/data/{packageToUninstall}_BACKUP /sdcard/Android/data/{packageToUninstall}", deviceData, receiver);
             adbClient.ExecuteRemoteCommand($"mv /sdcard/Android/obb/{packageToUninstall}_BACKUP /sdcard/Android/obb/{packageToUninstall}", deviceData, receiver);
 
-            await wsClient.SendAsync(new byte[] { 1 });
+            await wsClient.NativeClient.SendAsync(new byte[] { 1 }, System.Net.WebSockets.WebSocketMessageType.Binary, true, default).ConfigureAwait(false);
 
             adbClient.RemoveForward(deviceData, 9000);
 
             mainForm.statusText.Text = "COMPLETE";
+
+            Dispose();
         }
 
-        private static void OnMessageReceived(object? sender, MessageReceivedEventArgs e)
+        public static void Dispose()
         {
-            packageToUninstall = Encoding.UTF8.GetString(e.Data);
+            try
+            {
+                adbClient.KillAdb();
+            }
+            catch { }
+            wsClient.Dispose();
         }
     }
 }

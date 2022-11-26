@@ -13,8 +13,13 @@ namespace LemonADBBridge
             InitializeComponent();
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
         {
+            statusText.Text = "CHECKING ADB...";
+            await Task.Delay(100);
+            await ADBCheck.CheckAndExtract();
+            statusText.Text = "DISCONNECTED";
+
             adbServer = new AdbServer();
             adbServer.StartServer(StaticStuff.ADBPath, restartServerIfNewer: true);
             adbClient = new AdbClient();
@@ -27,6 +32,11 @@ namespace LemonADBBridge
             }
         }
 
+        private void MainForm_Close(object sender, EventArgs e)
+        {
+            UninstallationHandler.Dispose();
+        }
+
         private void RefreshDevices(object sender, EventArgs e)
         {
             button2.Enabled = false;
@@ -37,17 +47,12 @@ namespace LemonADBBridge
             }
         }
 
-        private void ConfirmDevice(object sender, EventArgs e)
+        private async void ConfirmDevice(object sender, EventArgs e)
         {
             devicesComboBox.Enabled = false;
             button1.Enabled = false;
             button2.Enabled = false;
-            button3.Enabled = true;
-        }
 
-        private async void ConnectToDevice(object sender, EventArgs e)
-        {
-            button3.Enabled = false;
             DeviceData confirmedData = deviceComboBox.GetSelectedData();
             await UninstallationHandler.Run(adbClient, confirmedData, this);
         }

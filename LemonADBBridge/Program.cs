@@ -9,7 +9,7 @@ namespace LemonADBBridge
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new ADBCheck());
+            Application.Run(new MainForm());
         }
     }
 }

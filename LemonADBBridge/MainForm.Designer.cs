@@ -34,7 +34,6 @@
             this.statusText = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // devicesComboBox
@@ -95,23 +94,11 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.ConfirmDevice);
             // 
-            // button3
-            // 
-            this.button3.Enabled = false;
-            this.button3.Location = new System.Drawing.Point(199, 118);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(120, 23);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "Connect To Device";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.ConnectToDevice);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(421, 153);
-            this.Controls.Add(this.button3);
+            this.ClientSize = new System.Drawing.Size(421, 126);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.statusText);
@@ -123,6 +110,7 @@
             this.Name = "MainForm";
             this.RightToLeftLayout = true;
             this.Text = "Lemon ADB Bridge®";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_Close);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -137,6 +125,5 @@
         private Button button1;
         private Button button2;
         public Label statusText;
-        private Button button3;
     }
 }

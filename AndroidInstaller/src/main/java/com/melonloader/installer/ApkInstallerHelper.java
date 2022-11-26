@@ -125,7 +125,7 @@ public class ApkInstallerHelper {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder
                 .setTitle("ADB Bridge")
-                .setMessage("Waiting...\nIf you haven't already, please press \"Connect\" on your ADB Bridge client.")
+                .setMessage("Waiting...\nIf you haven't already, please confirm your device on the ADB Bridge client.")
                 .setNegativeButton("Cancel", (dialogInterface, i) -> {
                     ADBBridgeHelper.Cancel();
                     HandleStandard();
