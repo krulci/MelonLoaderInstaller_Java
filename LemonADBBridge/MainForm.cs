@@ -37,12 +37,17 @@ namespace LemonADBBridge
             }
         }
 
-        private async void ConfirmDevice(object sender, EventArgs e)
+        private void ConfirmDevice(object sender, EventArgs e)
         {
             devicesComboBox.Enabled = false;
             button1.Enabled = false;
             button2.Enabled = false;
+            button3.Enabled = true;
+        }
 
+        private async void ConnectToDevice(object sender, EventArgs e)
+        {
+            button3.Enabled = false;
             DeviceData confirmedData = deviceComboBox.GetSelectedData();
             await UninstallationHandler.Run(adbClient, confirmedData, this);
         }

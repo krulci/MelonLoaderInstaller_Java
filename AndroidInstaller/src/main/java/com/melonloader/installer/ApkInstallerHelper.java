@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider;
 
 import com.android.apksig.ApkVerifier;
 import com.melonloader.installer.adbbridge.ADBBridgeHelper;
+import com.melonloader.installer.adbbridge.ADBBridgeSocket;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,40 +99,54 @@ public class ApkInstallerHelper {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder
                 .setTitle("ADB Bridge")
-                .setMessage("Do you want to connect to the Lemon ADB Bridge® to save game data and OBBs, if they exist?")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Log.i("MelonLoader", "Using ADBBridge");
-                        ADBBridgeHelper.AttemptConnect(packageName, new Callable() {
-                            @Override
-                            public void call() {
-                                onActivityResult(1000, 0, null);
-                            }
+                .setMessage("Do you want to use the Lemon ADB Bridge® to save game data and OBBs, if they exist?")
+                .setPositiveButton("Yes", (dialogInterface, i) -> HandleBridge())
+                .setNegativeButton("No", (dialogInterface, i) -> HandleStandard())
+                .setIcon(android.R.drawable.ic_dialog_info);
 
-                            @Override
-                            public void callOnFail() {}
-                        });
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Log.i("MelonLoader", "Not using ADBBridge");
-                        context.runOnUiThread(() -> {
-                            pending = Intent.ACTION_DELETE;
+        AlertDialog alert = builder.create();
+        alert.setCancelable(false);
+        alert.show();
+    }
 
-                            Intent intent = new Intent(Intent.ACTION_DELETE);
-                            intent.setData(Uri.parse("package:" + packageName));
-                            context.startActivityForResult(intent, 1000);
-                        });
-                    }
+    protected void HandleBridge() {
+        Log.i("MelonLoader", "Using ADBBridge");
+
+        ADBBridgeHelper.AttemptConnect(packageName, new Callable() {
+            @Override
+            public void call() {
+                onActivityResult(1000, 0, null);
+            }
+
+            @Override
+            public void callOnFail() {}
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder
+                .setTitle("ADB Bridge")
+                .setMessage("Waiting...\nIf you haven't already, please press \"Connect\" on your ADB Bridge client.")
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    ADBBridgeHelper.Cancel();
+                    HandleStandard();
                 })
                 .setIcon(android.R.drawable.ic_dialog_info);
 
         AlertDialog alert = builder.create();
         alert.setCancelable(false);
         alert.show();
+        ADBBridgeHelper.getBridgeSocket().alertDialog = alert;
+    }
+
+    protected void HandleStandard() {
+        Log.i("MelonLoader", "Not using ADBBridge");
+        context.runOnUiThread(() -> {
+            pending = Intent.ACTION_DELETE;
+
+            Intent intent = new Intent(Intent.ACTION_DELETE);
+            intent.setData(Uri.parse("package:" + packageName));
+            context.startActivityForResult(intent, 1000);
+        });
     }
 
     private static Uri uriFromFile(Context context, File file) {
@@ -144,20 +159,13 @@ public class ApkInstallerHelper {
 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        Log.e("melonloader", "" + requestCode + " " + resultCode);
-//        if (!data.getAction().equals(pending))
-//            return;
+        Log.i("melonloader", "" + requestCode + " " + resultCode);
 
         if (requestCode == 1000)
         {
             pending = null;
-
             if (next != null)
                 next.run();
-
-            if (afterInstall != null
-            )
-                afterInstall.call();
             next = null;
         }
         if (requestCode == 2000)
@@ -171,6 +179,11 @@ public class ApkInstallerHelper {
                 Log.i("melonloader", "Package not installed, attempting installation");
                 installLoopCount++;
                 InternalInstall(lastInstallPath);
+            }
+            else {
+                if (afterInstall != null)
+                    afterInstall.call();
+                afterInstall = null;
             }
         }
     }

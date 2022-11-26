@@ -1,30 +1,32 @@
 package com.melonloader.installer.adbbridge;
 
 import com.melonloader.installer.Callable;
-import dev.gustavoavila.websocketclient.WebSocketClient;
-
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 
 public class ADBBridgeHelper
 {
+    private static ADBBridgeSocket bridgeSocket;
+    public static ADBBridgeSocket getBridgeSocket() {
+        return bridgeSocket;
+    }
+
     public static void AttemptConnect(String packageName, Callable afterConnect)
     {
-        URI uri;
         try {
-            uri = new URI("ws://localhost:9000");
+            bridgeSocket = new ADBBridgeSocket(9000, afterConnect, packageName);
+            bridgeSocket.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
+    }
+
+    public static void Cancel() {
+        if (bridgeSocket != null) {
+            try {
+                bridgeSocket.stop();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
-
-        WebSocketClient webSocketClient = new ADBBridgeListener(uri, afterConnect);
-
-        webSocketClient.setConnectTimeout(10000);
-        webSocketClient.setReadTimeout(60000);
-        webSocketClient.enableAutomaticReconnection(5000);
-        webSocketClient.connect();
-        webSocketClient.send(packageName);
     }
 }
