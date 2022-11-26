@@ -1,7 +1,6 @@
 package com.melonloader.installer.adbbridge;
 
 import com.melonloader.installer.Callable;
-import java.net.UnknownHostException;
 
 public class ADBBridgeHelper
 {
@@ -20,7 +19,7 @@ public class ADBBridgeHelper
         }
     }
 
-    public static void Cancel() {
+    public static void Kill() {
         if (bridgeSocket != null) {
             try {
                 bridgeSocket.stop();

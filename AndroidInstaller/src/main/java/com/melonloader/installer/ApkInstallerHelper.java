@@ -2,33 +2,21 @@ package com.melonloader.installer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Trace;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import com.android.apksig.ApkVerifier;
 import com.melonloader.installer.adbbridge.ADBBridgeHelper;
-import com.melonloader.installer.adbbridge.ADBBridgeSocket;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.Signature;
-import java.util.List;
 
 public class ApkInstallerHelper {
     Activity context;
@@ -127,7 +115,7 @@ public class ApkInstallerHelper {
                 .setTitle("ADB Bridge")
                 .setMessage("Waiting...\nIf you haven't already, please confirm your device on the ADB Bridge client.")
                 .setNegativeButton("Cancel", (dialogInterface, i) -> {
-                    ADBBridgeHelper.Cancel();
+                    ADBBridgeHelper.Kill();
                     HandleStandard();
                 })
                 .setIcon(android.R.drawable.ic_dialog_info);
@@ -181,6 +169,7 @@ public class ApkInstallerHelper {
                 InternalInstall(lastInstallPath);
             }
             else {
+                ADBBridgeHelper.Kill();
                 if (afterInstall != null)
                     afterInstall.call();
                 afterInstall = null;

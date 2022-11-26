@@ -36,12 +36,16 @@ namespace LemonADBBridge
                 await Task.Delay(500);
             }
 
-            mainForm.statusText.Text = packageToUninstall;
-
             var receiver = new ConsoleOutputReceiver();
 
             adbClient.ExecuteRemoteCommand($"mv /sdcard/Android/data/{packageToUninstall} /sdcard/Android/data/{packageToUninstall}_BACKUP", deviceData, receiver);
             adbClient.ExecuteRemoteCommand($"mv /sdcard/Android/obb/{packageToUninstall} /sdcard/Android/obb/{packageToUninstall}_BACKUP", deviceData, receiver);
+
+            // Handles permission conflicts when reinstalling MelonLoader
+            adbClient.ExecuteRemoteCommand($"rm -rf /sdcard/Android/data/{packageToUninstall}_BACKUP/cache", deviceData, receiver);
+            adbClient.ExecuteRemoteCommand($"rm -rf /sdcard/Android/data/{packageToUninstall}_BACKUP/files/melonloader", deviceData, receiver);
+            adbClient.ExecuteRemoteCommand($"rm -rf /sdcard/Android/data/{packageToUninstall}_BACKUP/files/il2cpp", deviceData, receiver);
+            adbClient.ExecuteRemoteCommand($"rm /sdcard/Android/data/{packageToUninstall}_BACKUP/files/funchook.log", deviceData, receiver);
 
             adbClient.ExecuteRemoteCommand("pm uninstall " + packageToUninstall, deviceData, receiver);
 
