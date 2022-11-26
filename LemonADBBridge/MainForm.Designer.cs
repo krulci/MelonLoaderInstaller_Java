@@ -34,6 +34,7 @@
             this.statusText = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.copyLocal = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // devicesComboBox
@@ -94,11 +95,24 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.ConfirmDevice);
             // 
+            // copyLocal
+            // 
+            this.copyLocal.AutoSize = true;
+            this.copyLocal.Checked = true;
+            this.copyLocal.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.copyLocal.Location = new System.Drawing.Point(12, 125);
+            this.copyLocal.Name = "copyLocal";
+            this.copyLocal.Size = new System.Drawing.Size(121, 19);
+            this.copyLocal.TabIndex = 6;
+            this.copyLocal.Text = "Copy Data Locally";
+            this.copyLocal.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(421, 126);
+            this.ClientSize = new System.Drawing.Size(421, 156);
+            this.Controls.Add(this.copyLocal);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.statusText);
@@ -125,5 +139,6 @@
         private Button button1;
         private Button button2;
         public Label statusText;
+        public CheckBox copyLocal;
     }
 }
