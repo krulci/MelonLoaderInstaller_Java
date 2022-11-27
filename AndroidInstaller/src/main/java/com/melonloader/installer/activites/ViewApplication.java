@@ -1,6 +1,5 @@
 package com.melonloader.installer.activites;
 
-import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.os.*;
 import androidx.annotation.NonNull;
@@ -14,8 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,41 +20,24 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.melonloader.installer.*;
 import com.melonloader.installer.core.ILogger;
 import com.melonloader.installer.core.Main;
 import com.melonloader.installer.core.Properties;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Provider;
-import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Observable;
 
 public class ViewApplication extends AppCompatActivity implements View.OnClickListener {
-    private SupportedApplication application;
+    private UnityApplicationData application;
     private LoggerHelper loggerHelper;
     private ApkInstallerHelper installerHelper = null;
 

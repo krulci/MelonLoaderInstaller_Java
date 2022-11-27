@@ -1,6 +1,8 @@
 package com.melonloader.installer.activites;
 
 import android.Manifest;
+import android.graphics.Color;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,23 +13,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.melonloader.installer.ApplicationFinder;
 import com.melonloader.installer.R;
-import com.melonloader.installer.SupportedApplication;
+import com.melonloader.installer.UnityApplicationData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-    List<SupportedApplication> supportedApplications;
+    List<UnityApplicationData> unityApplications;
     ListView listview;
+    Toast unsupportedToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,9 +33,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        supportedApplications = ApplicationFinder.GetSupportedApplications(this);
+        unityApplications = ApplicationFinder.GetSupportedApplications(this);
 
-        SupportedApplicationsAdapter adapter = new SupportedApplicationsAdapter(this, supportedApplications);
+        SupportedApplicationsAdapter adapter = new SupportedApplicationsAdapter(this, unityApplications);
 
         listview = (ListView) findViewById(R.id.application_list);
         listview.setAdapter(adapter);
@@ -53,22 +51,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
         Log.i("melonloader", "You clicked Item: " + id + " at position:" + position);
+        UnityApplicationData app = unityApplications.get(position);
+
+        if (!app.supported) {
+            if (unsupportedToast == null)
+                unsupportedToast = Toast.makeText(getApplicationContext(), "Unsupported application", Toast.LENGTH_SHORT);
+            unsupportedToast.show();
+            return;
+        }
+
         // Then you start a new Activity via Intent
         Intent intent = new Intent();
         intent.setClass(this, ViewApplication.class);
-        intent.putExtra("target.packageName", supportedApplications.get(position).packageName);
+        intent.putExtra("target.packageName", app.packageName);
         startActivity(intent);
     }
 
-    public class SupportedApplicationsAdapter extends ArrayAdapter<SupportedApplication> {
-        public SupportedApplicationsAdapter(Context context, List<SupportedApplication> apps) {
+    public class SupportedApplicationsAdapter extends ArrayAdapter<UnityApplicationData> {
+        public SupportedApplicationsAdapter(Context context, List<UnityApplicationData> apps) {
             super(context, 0, apps);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // Get the data item for this position
-            SupportedApplication application = getItem(position);
+            UnityApplicationData application = getItem(position);
             // Check if an existing view is being reused, otherwise inflate the view
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_supported_application, parent, false);
@@ -84,6 +91,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             applicationIcon.setImageDrawable(application.icon);
 
             applicationPatched.setVisibility(application.patched ? View.VISIBLE : View.GONE);
+            if (!application.supported)
+            {
+                applicationPatched.setVisibility(View.VISIBLE);
+                applicationPatched.setText("unsupported");
+                applicationPatched.setTextColor(Color.RED);
+            }
 
             if (application.unityVersion == null) {
                 unityVersion.setVisibility(View.GONE);
