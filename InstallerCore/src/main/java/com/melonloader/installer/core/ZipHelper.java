@@ -1,5 +1,6 @@
 package com.melonloader.installer.core;
 
+import jdk.jshell.spi.ExecutionControl;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.UnzipParameters;
 import net.lingala.zip4j.model.ZipParameters;
@@ -94,19 +95,21 @@ public class ZipHelper {
 
         List<File> filesToAdd = new ArrayList<>();
 
-        for (String s : (new File(tempBuildDir)).list()) {
-            File subfile = new File(Paths.get(tempBuildDir, s).toString());
-            if (subfile.isDirectory()) {
-                Main.GetProperties().logger.Log("adding: " + subfile.getAbsolutePath());
-                zip.addFolder(subfile, params);
+        for (File f : new File(tempBuildDir).listFiles()) {
+            if (f.isDirectory()) {
+                Main.GetProperties().logger.Log("Adding Directory: " + f.getAbsolutePath());
+                zip.addFolder(f, params);
             }
             else {
-                filesToAdd.add(subfile);
+                Main.GetProperties().logger.Log("Adding File: " + f.getAbsolutePath());
+                filesToAdd.add(f);
             }
         }
-
         Main.GetProperties().logger.Log("writing base files");
-        zip.addFiles(filesToAdd);
+        // This code can sometimes cause issues I think?
+        // I have no idea, just sometimes breaks zipping stuff
+        if (filesToAdd.size() > 0)
+            zip.addFiles(filesToAdd);
 
         zip.close();
         addMap.clear();

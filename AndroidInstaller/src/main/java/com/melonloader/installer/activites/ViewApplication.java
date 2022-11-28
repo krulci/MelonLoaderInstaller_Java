@@ -25,6 +25,7 @@ import com.melonloader.installer.*;
 import com.melonloader.installer.core.ILogger;
 import com.melonloader.installer.core.Main;
 import com.melonloader.installer.core.Properties;
+import com.melonloader.installer.splitapksupport.SplitAPKInstaller;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -202,11 +203,21 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
             loggerHelper.Log("Starting patch");
 
+            String libFileName = Paths.get(application.libApkLocation).getFileName().toString();
+
+            File baseDir = Paths.get(finalPublishedBase, application.packageName).toFile();
+            if (!baseDir.exists())
+                baseDir.mkdir();
+
             String outputApkScoped = Paths.get(tempPath.toString(), "base.apk").toString();
-            String outputApk = Paths.get(finalPublishedBase, application.packageName + ".apk").toString();
+            String libApkScoped = Paths.get(tempPath.toString(), libFileName).toString();
+            String outputApk = Paths.get(baseDir.toString(), "base.apk").toString();
+            String libOutApk = Paths.get(baseDir.toString(), libFileName).toString();
 
             boolean success = Main.Run(new Properties() {{
                 targetApk = application.apkLocation;
+                libraryApk = application.libApkLocation;
+                isSplit = application.split;
                 outputApk = outputApkScoped;
                 tempDir = tempPath.toString();
                 logger = loggerHelper;
@@ -219,36 +230,27 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 try {
                     requestWritePermission();
                     Files.move(Paths.get(outputApkScoped), Paths.get(outputApk), StandardCopyOption.REPLACE_EXISTING);
+                    if (application.split)
+                        Files.move(Paths.get(libApkScoped), Paths.get(libOutApk), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     e.printStackTrace();
                     loggerHelper.Log(e.toString());
                     loggerHelper.Log("using fallback folder");
                     outputApk = outputApkScoped;
+                    libOutApk = libApkScoped;
                 }
 
                 loggerHelper.Log("Application Successfully patched. Reinstalling.");
 
                 String finalOutputApk = outputApk;
+                String finalLibOutApk = libOutApk;
                 runOnUiThread(() -> {
-                    installerHelper = new ApkInstallerHelper(this, application.appName);
-                    installerHelper.InstallApk(Paths.get(finalOutputApk).toString(), new Callable() {
-                        @Override
-                        public void call() {
-                            ActionBar actionBar = getSupportActionBar();
-                            actionBar.setDisplayHomeAsUpEnabled(true);
-                            patchButton.setText("PATCHED");
-                            loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
-                        }
-
-                        @Override
-                        public void callOnFail() {
-                            ActionBar actionBar = getSupportActionBar();
-                            actionBar.setDisplayHomeAsUpEnabled(true);
-                            patchButton.setText("FAILED");
-
-                            loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
-                        }
-                    });
+                    if (!application.split) {
+                        InstallSingle(patchButton, finalOutputApk);
+                    }
+                    else {
+                        InstallSplit(patchButton, finalOutputApk, finalLibOutApk);
+                    }
                 });
             }
             else
@@ -260,6 +262,48 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
                     loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
                 });
+            }
+        });
+    }
+
+    private void InstallSingle(Button patchButton, String finalOutputApk) {
+        installerHelper = new ApkInstallerHelper(this, application.appName);
+        installerHelper.InstallApk(Paths.get(finalOutputApk).toString(), new Callable() {
+            @Override
+            public void call() {
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                patchButton.setText("PATCHED");
+                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+
+            @Override
+            public void callOnFail() {
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                patchButton.setText("FAILED");
+
+                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+    }
+
+    private void InstallSplit(Button patchButton, String finalOutputApk, String libraryApk) {
+        Log.i("melonloader", "SPLIT - " + finalOutputApk + " - " + libraryApk);
+
+        installerHelper = new ApkInstallerHelper(this, application.appName);
+        installerHelper.UninstallPackage(new Runnable() {
+            @Override
+            public void run() {
+                SplitAPKInstaller.Install(new String[]{
+                        finalOutputApk,
+                        libraryApk
+                }, getApplicationContext());
+
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                patchButton.setText("PATCHED");
+                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
             }
         });
     }

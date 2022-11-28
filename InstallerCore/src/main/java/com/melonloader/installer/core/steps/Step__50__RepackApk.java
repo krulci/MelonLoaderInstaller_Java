@@ -29,13 +29,26 @@ public class Step__50__RepackApk extends InstallerStep {
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "mono", "bcl"), "*.dll", "assets/melonloader/etc/managed");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "support_modules"), "*.dll", "assets/melonloader/etc/support");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "assembly_generation"), "*.dll", "assets/melonloader/etc/assembly_generation/managed");
-        CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "native"), "*.so", "lib/arm64-v8a");
+        CopyTo(zipHelper, paths.unityManagedBase, "*.dll", "assets/melonloader/etc/assembly_generation/unity");
 
         // Copy entire /etc/ folder
         zipHelper.QueueWrite(Paths.get(paths.dependenciesDir.toString(), "etc").toString(), "assets/bin/Data/Managed/etc");
 
-        CopyTo(zipHelper, paths.unityManagedBase, "*.dll", "assets/melonloader/etc/assembly_generation/unity");
-        CopyTo(zipHelper, Paths.get(paths.unityNativeBase.toString(), "arm64-v8a"), "*.so", "lib/arm64-v8a");
+        // Not a split APK, handle as normal
+        properties.logger.Log(String.valueOf(properties.isSplit));
+        if (!properties.isSplit)
+        {
+            CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "native"), "*.so", "lib/arm64-v8a");
+            CopyTo(zipHelper, Paths.get(paths.unityNativeBase.toString(), "arm64-v8a"), "*.so", "lib/arm64-v8a");
+        }
+        // Split APK, scream and shout due to the pain and suffering it has brought upon us
+        else
+        {
+            ZipHelper libHelper = new ZipHelper(paths.libraryAPK.toString());
+            CopyTo(libHelper, Paths.get(paths.dependenciesDir.toString(), "native"), "*.so", "lib/arm64-v8a");
+            CopyTo(libHelper, Paths.get(paths.unityNativeBase.toString(), "arm64-v8a"), "*.so", "lib/arm64-v8a");
+            libHelper.Write();
+        }
 
         zipHelper.Write();
 

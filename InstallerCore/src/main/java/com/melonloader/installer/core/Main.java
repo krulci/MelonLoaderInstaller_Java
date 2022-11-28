@@ -23,6 +23,10 @@ public class Main {
 
             properties.logger.Log("Copying [" + properties.targetApk + "] to [" + paths.outputAPK + "]");
             Files.copy(Paths.get(properties.targetApk), paths.outputAPK, StandardCopyOption.REPLACE_EXISTING);
+            if (properties.isSplit) {
+                properties.logger.Log("Copying [" + properties.libraryApk + "] to [" + paths.libraryAPK + "]");
+                Files.copy(Paths.get(properties.libraryApk), paths.libraryAPK, StandardCopyOption.REPLACE_EXISTING);
+            }
 
             InstallerStep[] steps = new InstallerStep[] {
                 new Step__00__DetectUnityVersion(),

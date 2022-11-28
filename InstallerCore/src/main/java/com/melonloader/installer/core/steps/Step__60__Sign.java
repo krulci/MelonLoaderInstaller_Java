@@ -6,15 +6,17 @@ import com.melonloader.installer.core.LogOutputStream;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 
 public class Step__60__Sign extends InstallerStep {
     @Override
     public boolean Run() throws Exception {
-        return Align() && Sign();
+        return Align(paths.outputAPK) && Align(paths.libraryAPK) && Sign();
     }
 
     private boolean Sign() throws Exception {
@@ -40,6 +42,20 @@ public class Step__60__Sign extends InstallerStep {
             paths.outputAPK.toString()
         });
 
+        if (properties.isSplit) {
+            properties.logger.Log("Signing [" + paths.libraryAPK + "]");
+            ApkSignerTool.main(new String[] {
+                    "sign",
+                    "--ks",
+                    paths.keystore.toString(),
+                    "--ks-key-alias",
+                    "cert",
+                    "--ks-pass",
+                    "pass:" + properties.keystorePass,
+                    paths.libraryAPK.toString()
+            });
+        }
+
         if (isAndroid()) {
             System.out.flush();
             System.setOut(oldStream);
@@ -58,10 +74,14 @@ public class Step__60__Sign extends InstallerStep {
         }
     }
 
-    private boolean Align() throws IOException, InterruptedException {
-        properties.logger.Log("Aligning [" + paths.outputAPK + "]");
+    private boolean Align(Path path) throws IOException, InterruptedException {
+        // Chances are this is a non-split APK, so it's complaining about there not having a separate lib APK
+        if (path == null)
+            return true;
 
-        String alignedFilename = paths.outputAPK.toString() + "-aligned";
+        properties.logger.Log("Aligning [" + path + "]");
+
+        String alignedFilename = path.toString() + "-aligned";
 
         Process process = null;
         process = Runtime.getRuntime().exec(new String[] {
@@ -69,7 +89,7 @@ public class Step__60__Sign extends InstallerStep {
                 "-v",
                 "-f",
                 "4",
-                paths.outputAPK.toString(),
+                path.toString(),
                 alignedFilename
         });
 
@@ -89,8 +109,8 @@ public class Step__60__Sign extends InstallerStep {
 
         process.waitFor();
 
-        Files.delete(paths.outputAPK);
-        Files.move(Paths.get(alignedFilename), paths.outputAPK);
+        Files.delete(path);
+        Files.move(Paths.get(alignedFilename), path);
 
         Files.deleteIfExists(Paths.get(alignedFilename));
 

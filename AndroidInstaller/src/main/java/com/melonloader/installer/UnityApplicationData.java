@@ -13,14 +13,17 @@ import com.melonloader.installer.helpers.UnityVersionDetector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class UnityApplicationData {
     private ApplicationInfo application;
     public Drawable icon;
     public boolean patched;
     public boolean supported;
+    public boolean split;
     public String appName;
     public String apkLocation;
+    public String libApkLocation;
     public String packageName;
     public String unityVersion;
     private boolean getVersionAttempted = false;
@@ -33,6 +36,10 @@ public class UnityApplicationData {
         appName = info.packageName;
         packageName = info.packageName;
         apkLocation = info.publicSourceDir;
+        if (info.splitSourceDirs != null)
+            libApkLocation = Arrays.stream(info.splitSourceDirs).filter(a -> a.contains("arm64")).findFirst().orElse("");
+        else
+            libApkLocation = "";
 
         try {
             assetManager = pm.getResourcesForApplication(info).getAssets();
@@ -40,9 +47,12 @@ public class UnityApplicationData {
             e.printStackTrace();
         }
 
+        CheckSplit();
         CheckPatched();
         CheckSupported();
     }
+
+    public void CheckSplit() { split = application.splitSourceDirs != null; }
 
     public void CheckSupported() { supported = application.nativeLibraryDir.contains("arm64");  }
 

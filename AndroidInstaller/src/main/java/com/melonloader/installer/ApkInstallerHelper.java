@@ -40,7 +40,7 @@ public class ApkInstallerHelper {
     {
         afterInstall = doAfterInstall;
         next = () -> InternalInstall(path);
-        UninstallPackage();
+        UninstallPackage(null);
     }
 
     protected void InternalInstall(String path)
@@ -82,8 +82,11 @@ public class ApkInstallerHelper {
         }
     }
 
-    protected void UninstallPackage()
+    public void UninstallPackage(Runnable nxt)
     {
+        if (nxt != null)
+            next = nxt;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder
                 .setTitle("ADB Bridge")

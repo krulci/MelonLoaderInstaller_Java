@@ -12,6 +12,7 @@ public class PathDefinitions {
     public Path dexPatch;
     public Path dexOutput;
     public Path outputAPK;
+    public Path libraryAPK;
     public Path dependenciesDir;
 
     public Path unityBase;
@@ -30,6 +31,7 @@ public class PathDefinitions {
         dexPatch = Paths.get(dexBase.toString(), "patch");
         dexOutput = Paths.get(dexBase.toString(), "output");
         outputAPK = properties.outputApk != null ? Paths.get(properties.outputApk) : Paths.get(base.toString(), "base.apk");
+        libraryAPK = properties.libraryApk == "" ? null : Paths.get(base.toString(), Paths.get(properties.libraryApk).getFileName().toString());
         dependenciesDir = Paths.get(base.toString(), "dependencies");
 
         dexPatch = Paths.get(dependenciesDir.toString(), "dex");

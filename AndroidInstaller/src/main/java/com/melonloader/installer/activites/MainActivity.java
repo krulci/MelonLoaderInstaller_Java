@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.melonloader.installer.ApplicationFinder;
 import com.melonloader.installer.R;
 import com.melonloader.installer.UnityApplicationData;
+import com.melonloader.installer.splitapksupport.SplitAPKInstaller;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

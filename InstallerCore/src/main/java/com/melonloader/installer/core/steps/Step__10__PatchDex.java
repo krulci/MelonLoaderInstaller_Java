@@ -11,6 +11,8 @@ import lanchon.dexpatcher.core.logger.BasicLogger;
 import lanchon.dexpatcher.core.logger.Logger;
 
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -19,6 +21,10 @@ public class Step__10__PatchDex extends InstallerStep {
         properties.logger.Log("Patching dex");
 
         ManagedLogger logger = new ManagedLogger(properties.logger);
+
+        // Debugging code for when I don't need the dex to actually function
+        //Files.deleteIfExists(paths.dexOutput);
+        //org.apache.commons.io.FileUtils.copyDirectory(paths.dexOriginal.toFile(), paths.dexOutput.toFile());
 
         return Processor.processFiles(logger, new Configuration() {{
             sourceFile = paths.dexOriginal.toString();

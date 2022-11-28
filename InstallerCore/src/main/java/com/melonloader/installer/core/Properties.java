@@ -8,6 +8,7 @@ import java.nio.file.Path;
  */
 public class Properties {
     public String targetApk;
+    public String libraryApk;
     public String outputApk;
     public String tempDir;
     public String dependencies;
@@ -29,4 +30,6 @@ public class Properties {
 
     // Repatching stuff
     public boolean hasOriginalDex;
+    // Split APK stuff
+    public boolean isSplit;
 }
