@@ -112,7 +112,8 @@ gradle-app.setting
 .mtj.tmp/
 
 # Package Files #
-*.jar
+InstallerCore\build\*.jar
+AndroidInstaller\build\*.jar
 *.war
 *.nar
 *.ear
