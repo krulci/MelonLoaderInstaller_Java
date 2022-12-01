@@ -49,7 +49,6 @@
         </activity>
 
         <service android:name=".splitapksupport.SplitAPKService"/>
-        <activity android:name=".splitapksupport.ConfirmationIntentWrapperActivity"/>
     </application>
 
 </manifest>

@@ -1,16 +1,12 @@
 package com.melonloader.installer.splitapksupport;
 
 import android.app.PendingIntent;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
-import com.melonloader.installer.activites.MainActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,23 +18,22 @@ public class SplitAPKInstaller
 {
     public static final String TAG = "melonloader";
     private static Context context;
-    private static PackageInstaller mPackageInstaller;
+    private static PackageInstaller packageInstaller;
 
-    // This function and the other 2 classes in this package were modified or directly stolen from
-    // https://github.com/Aefyr/SAI
+    // Adapted from
+    // https://github.com/Aefyr/SAI/blob/55505d231b1390e824d1cc0c8f4fa35fd4677105/app/src/main/java/com/aefyr/sai/installer/rootless/RootlessSAIPackageInstaller.java#L73
     public static boolean Install(String[] files, Context ctx) {
         context = ctx;
-        mPackageInstaller = ctx.getPackageManager().getPackageInstaller();
+        packageInstaller = ctx.getPackageManager().getPackageInstaller();
         PackageInstaller.Session session = null;
         try {
             PackageInstaller.SessionParams sessionParams = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-            sessionParams.setInstallLocation(0);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 sessionParams.setInstallReason(PackageManager.INSTALL_REASON_USER);
 
-            int sessionID = mPackageInstaller.createSession(sessionParams);
+            int sessionID = packageInstaller.createSession(sessionParams);
+            session = packageInstaller.openSession(sessionID);
 
-            session = mPackageInstaller.openSession(sessionID);
             int currentApkFile = 0;
             for (String filePath : files) {
                 File file = new File(filePath);
