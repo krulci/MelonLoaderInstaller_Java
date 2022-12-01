@@ -1,9 +1,12 @@
 package com.melonloader.installer.activites;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.widget.*;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -17,6 +20,7 @@ import android.view.ViewGroup;
 import com.melonloader.installer.helpers.ApplicationFinder;
 import com.melonloader.installer.R;
 import com.melonloader.installer.UnityApplicationData;
+import com.melonloader.installer.helpers.PackageWarningHelper;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +36,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AsyncTask.execute(() -> {
+            boolean connectionAvailable = PackageWarningHelper.Run();
+            if (!connectionAvailable) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder
+                        .setTitle("Error")
+                        .setMessage("Unable to connect to GitHub! Please check your connection and try again")
+                        .setPositiveButton("Exit", (di, i) -> finishAndRemoveTask())
+                        .setIcon(android.R.drawable.ic_dialog_alert);
+
+                AlertDialog alert = builder.create();
+                alert.setCancelable(false);
+                alert.show();
+            }
+        });
 
         unityApplications = ApplicationFinder.GetSupportedApplications(this);
 

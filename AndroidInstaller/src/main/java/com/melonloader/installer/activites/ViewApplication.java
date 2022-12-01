@@ -29,6 +29,7 @@ import com.melonloader.installer.core.Properties;
 import com.melonloader.installer.helpers.ApkInstallerHelper;
 import com.melonloader.installer.helpers.ApplicationFinder;
 import com.melonloader.installer.helpers.DependencyDownloader;
+import com.melonloader.installer.helpers.PackageWarningHelper;
 import com.melonloader.installer.splitapksupport.SplitAPKInstaller;
 
 import java.io.*;
@@ -89,18 +90,12 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
 
     public void CheckWarnings(String targetPackageName)
     {
-        // BONELAB specific, obviously
-        // Attempting to clarify some stuff before the user actually installs it
-        boolean isWarnable = targetPackageName.equals("com.DefaultCompany.AudioImporterTests") // Test App
-                || targetPackageName.equals("com.StressLevelZero.BONELAB");
-        if (isWarnable)
-        {
+        String warning = PackageWarningHelper.AvailableWarnings.getOrDefault(targetPackageName, null);
+        if (warning != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder
-                    .setTitle("BONELAB Warning")
-                    .setMessage("Some mods will NOT function through LemonLoader. " +
-                            "This includes Multiplayer Mockup and possibly Fusion when it releases. " +
-                            "If a mod does not function, do NOT bug the mod creator about it.")
+                    .setTitle("Warning")
+                    .setMessage(warning)
                     .setIcon(android.R.drawable.ic_dialog_alert);
 
             AlertDialog alert = builder.create();
