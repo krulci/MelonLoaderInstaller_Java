@@ -35,6 +35,7 @@ public class Main {
                 new Step__05__ExtractDependencies(),
                 new Step__06__ExtractUnityLibs(),
                 new Step__10__PatchDex(),
+                new Step__11__PatchManifest(),
                 new Step__40__RemoveStaleFiles(),
                 new Step__50__RepackApk(),
                 new Step__55__GeneratingSigner(),

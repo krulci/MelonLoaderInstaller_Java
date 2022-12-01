@@ -32,4 +32,5 @@ public class Properties {
     public boolean hasOriginalDex;
     // Split APK stuff
     public boolean isSplit;
+    public FileReaderWriter readerWriter;
 }

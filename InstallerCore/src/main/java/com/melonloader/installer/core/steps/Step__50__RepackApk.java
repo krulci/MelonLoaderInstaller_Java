@@ -44,6 +44,9 @@ public class Step__50__RepackApk extends InstallerStep {
         // Split APK, scream and shout due to the pain and suffering it has brought upon us
         else
         {
+            // Write modded manifest
+            zipHelper.QueueWrite(Paths.get(properties.tempDir, "AndroidManifest.xml").toString(), "AndroidManifest.xml");
+
             ZipHelper libHelper = new ZipHelper(paths.libraryAPK.toString());
             CopyTo(libHelper, Paths.get(paths.dependenciesDir.toString(), "native"), "*.so", "lib/arm64-v8a");
             CopyTo(libHelper, Paths.get(paths.unityNativeBase.toString(), "arm64-v8a"), "*.so", "lib/arm64-v8a");

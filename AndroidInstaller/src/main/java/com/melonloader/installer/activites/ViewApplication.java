@@ -1,5 +1,6 @@
 package com.melonloader.installer.activites;
 
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.*;
 import androidx.annotation.NonNull;
@@ -22,16 +23,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.melonloader.installer.*;
+import com.melonloader.installer.core.FileReaderWriter;
 import com.melonloader.installer.core.ILogger;
 import com.melonloader.installer.core.Main;
 import com.melonloader.installer.core.Properties;
 import com.melonloader.installer.splitapksupport.SplitAPKInstaller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -183,6 +181,9 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 patchButton.setText("PATCHING");
             });
 
+            // Deletes all contents of the temp path, useful if the install has failed before
+            deleteFolder(tempPath.toFile());
+
             loggerHelper.Log("Build Directory: [" + MelonLoaderBase + "]");
 
             loggerHelper.Log("Preparing Assets");
@@ -224,6 +225,36 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 dependencies = depsLocation;
                 il2cppEtc = etcLocation;
                 zipAlign = zipAlignLocation;
+                readerWriter = new FileReaderWriter() {
+                    @Override
+                    public String readFile(String path) {
+                        File file = new File(path);
+                        int length = (int) file.length();
+                        byte[] bytes = new byte[length];
+
+                        try {
+                            FileInputStream in = new FileInputStream(file);
+                            in.read(bytes);
+                            in.close();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        String contents = new String(bytes);
+                        return contents;
+                    }
+
+                    @Override
+                    public void writeFile(String path, String data) {
+                        try {
+                            FileOutputStream stream = new FileOutputStream(path);
+                            stream.write(data.getBytes());
+                            stream.close();
+                        }
+                        catch (Exception ex) {
+                        }
+                    }
+                };
             }});
 
             if (success) {
@@ -357,6 +388,21 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         while((read = in.read(buffer)) != -1){
             out.write(buffer, 0, read);
         }
+    }
+
+    // https://stackoverflow.com/a/7768086
+    public static void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
     }
 
     public class LoggerHelper implements ILogger {
