@@ -1,6 +1,5 @@
 package com.melonloader.installer.activites;
 
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.*;
 import androidx.annotation.NonNull;
@@ -27,6 +26,9 @@ import com.melonloader.installer.core.FileReaderWriter;
 import com.melonloader.installer.core.ILogger;
 import com.melonloader.installer.core.Main;
 import com.melonloader.installer.core.Properties;
+import com.melonloader.installer.helpers.ApkInstallerHelper;
+import com.melonloader.installer.helpers.ApplicationFinder;
+import com.melonloader.installer.helpers.DependencyDownloader;
 import com.melonloader.installer.splitapksupport.SplitAPKInstaller;
 
 import java.io.*;

@@ -1,4 +1,4 @@
-package com.melonloader.installer;
+package com.melonloader.installer.helpers;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,6 +14,8 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
+import com.melonloader.installer.BuildConfig;
+import com.melonloader.installer.Callable;
 import com.melonloader.installer.adbbridge.ADBBridgeHelper;
 
 import java.io.File;

@@ -1,9 +1,10 @@
-package com.melonloader.installer;
+package com.melonloader.installer.helpers;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import com.melonloader.installer.UnityApplicationData;
 
 import java.util.ArrayList;
 import java.util.List;

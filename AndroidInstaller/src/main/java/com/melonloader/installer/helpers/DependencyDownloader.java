@@ -1,4 +1,4 @@
-package com.melonloader.installer;
+package com.melonloader.installer.helpers;
 
 import android.util.Log;
 import com.melonloader.installer.activites.ViewApplication;
