@@ -262,11 +262,7 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
             else
             {
                 runOnUiThread(() -> {
-                    ActionBar actionBar = getSupportActionBar();
-                    actionBar.setDisplayHomeAsUpEnabled(true);
-                    patchButton.setText("FAILED");
-
-                    loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                    SetPatched(patchButton, "FAILED");
                 });
             }
         });
@@ -277,19 +273,12 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         installerHelper.InstallApk(Paths.get(finalOutputApk).toString(), new Callable() {
             @Override
             public void call() {
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                patchButton.setText("PATCHED");
-                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                SetPatched(patchButton, "PATCHED");
             }
 
             @Override
             public void callOnFail() {
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                patchButton.setText("FAILED");
-
-                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                SetPatched(patchButton, "FAILED");
             }
         });
     }
@@ -298,20 +287,26 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         Log.i("melonloader", "SPLIT - " + finalOutputApk + " - " + libraryApk);
 
         installerHelper = new ApkInstallerHelper(this, application.appName);
-        installerHelper.UninstallPackage(new Runnable() {
-            @Override
-            public void run() {
+        installerHelper.UninstallPackage(() -> {
+            if (installerHelper.uninstallCanceled) {
+                SetPatched(patchButton, "CANCELED");
+            }
+            else {
                 SplitAPKInstaller.Install(new String[]{
                         finalOutputApk,
                         libraryApk
                 }, getApplicationContext());
 
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                patchButton.setText("PATCHED");
-                loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
+                SetPatched(patchButton, "PATCHED");
             }
         });
+    }
+
+    private void SetPatched(Button patchButton, String data) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        patchButton.setText(data);
+        loggerHelper.scroller.fullScroll(ScrollView.FOCUS_DOWN);
     }
 
     private void copyAssets(String assetName, String dest) {

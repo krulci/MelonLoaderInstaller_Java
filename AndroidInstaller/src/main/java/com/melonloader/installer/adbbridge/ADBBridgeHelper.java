@@ -17,6 +17,7 @@ public class ADBBridgeHelper
     private static final boolean useSocket = false;
     private static ADBBridgeSocket bridgeSocket;
     private static AlertDialog alertDialog;
+    private static boolean shouldDie;
 
     public static void AttemptConnect(String filesDir, String packageName, Callable afterConnect)
     {
@@ -29,10 +30,14 @@ public class ADBBridgeHelper
             }
         }
         else  {
+            shouldDie = false;
             File tempFile = Paths.get(filesDir, "temp", "adbbridge.txt").toFile();
             FileHelper.writeFile(tempFile.getAbsolutePath(), packageName);
             AsyncTask.execute(() -> {
                 while (tempFile.exists()) {
+                    if (shouldDie)
+                        return;
+
                     //Log.i("melonloader", "looping");
                     try {
                         Thread.sleep(5000);
@@ -66,7 +71,7 @@ public class ADBBridgeHelper
             }
         }
         else {
-            // TBD
+            shouldDie = true;
         }
     }
 }

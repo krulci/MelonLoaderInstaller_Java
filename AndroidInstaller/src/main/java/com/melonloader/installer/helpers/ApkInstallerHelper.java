@@ -24,6 +24,7 @@ public class ApkInstallerHelper {
     Activity context;
     String packageName;
     String lastInstallPath;
+    public Boolean uninstallCanceled;
 
     Integer installLoopCount;
 
@@ -119,9 +120,14 @@ public class ApkInstallerHelper {
         builder
                 .setTitle("ADB Bridge")
                 .setMessage("Waiting...\nIf you haven't already, please confirm your device on the ADB Bridge client.")
-                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                .setPositiveButton("Use Standard Uninstall", (dialogInterface, i) -> {
                     ADBBridgeHelper.Kill();
                     HandleStandard();
+                })
+                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    ADBBridgeHelper.Kill();
+                    uninstallCanceled = true;
+                    onActivityResult(1000, 0, null);
                 })
                 .setIcon(android.R.drawable.ic_dialog_info);
 
@@ -156,6 +162,13 @@ public class ApkInstallerHelper {
 
         if (requestCode == 1000)
         {
+            if (uninstallCanceled && afterInstall != null) {
+                pending = null;
+                next = null;
+                afterInstall.callOnFail();
+                return;
+            }
+
             pending = null;
             if (next != null)
                 next.run();
