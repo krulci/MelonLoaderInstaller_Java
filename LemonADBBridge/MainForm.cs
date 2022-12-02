@@ -1,4 +1,5 @@
 ﻿using SharpAdbClient;
+using System.Runtime.InteropServices;
 
 namespace LemonADBBridge
 {
@@ -30,7 +31,11 @@ namespace LemonADBBridge
             {
                 deviceComboBox.AddItem(device);
             }
+            AllocConsole();
         }
+
+        [DllImport("kernel32.dll")]
+        public static extern Boolean AllocConsole();
 
         private void MainForm_Close(object sender, EventArgs e)
         {

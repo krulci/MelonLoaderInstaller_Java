@@ -1,4 +1,5 @@
-﻿using SharpAdbClient;
+﻿using Microsoft.Extensions.Logging;
+using SharpAdbClient;
 using System.Diagnostics;
 using System.Net;
 using Websocket.Client;
@@ -18,27 +19,26 @@ namespace LemonADBBridge
             deviceData = data;
             adbClient = client;
 
-            adbClient.RemoveAllForwards(deviceData);
-            adbClient.CreateForward(deviceData, "tcp:9000", "tcp:9000", true);
-
             mainForm.statusText.Text = "WAITING FOR CONNECTION...";
 
-            wsClient = new WebsocketClient(new Uri("ws://localhost:9000"));
-            wsClient.MessageReceived.Subscribe(e => packageToUninstall = e.Text);
+            while (true)
+            {
+                StringReceiver rec = new();
+                adbClient.ExecuteRemoteCommand("cat /sdcard/Android/data/com.melonloader.installer/files/temp/adbbridge.txt", deviceData, rec);
+                string result = rec.ToString();
 
-            wsClient.ErrorReconnectTimeout = TimeSpan.FromSeconds(3);
-            wsClient.ReconnectTimeout = TimeSpan.FromSeconds(3);
-            wsClient.IsReconnectionEnabled = true;
-            await wsClient.Start();
+                if (!result.Contains("No such file or directory"))
+                {
+                    packageToUninstall = result.TrimEnd();
+                    break;
+                }
+
+                await Task.Delay(5000);
+            }
 
             mainForm.statusText.Text = "CONNECTED";
 
-            while (packageToUninstall == null)
-            {
-                await Task.Delay(500);
-            }
-
-            var receiver = new ConsoleOutputReceiver();
+            var receiver = new ConsoleOutputReceiver(new LoggerFactory().CreateLogger<ConsoleOutputReceiver>());
 
             if (mainForm.copyLocal.Checked)
             {
@@ -61,6 +61,11 @@ namespace LemonADBBridge
                 proc.Start();
                 proc.WaitForExit();
                 adbClient.ExecuteRemoteCommand($"mv /sdcard/Android/obb/{packageToUninstall}_BACKUP /sdcard/Android/obb/{packageToUninstall}", deviceData, receiver);
+                try
+                {
+                    File.Delete(Path.Combine(Directory.GetCurrentDirectory(), packageToUninstall));
+                }
+                catch { }
             }
             else
             {
@@ -79,9 +84,7 @@ namespace LemonADBBridge
                 adbClient.ExecuteRemoteCommand($"mv /sdcard/Android/obb/{packageToUninstall}_BACKUP /sdcard/Android/obb/{packageToUninstall}", deviceData, receiver);
             }
 
-            await wsClient.NativeClient.SendAsync(new byte[] { 1 }, System.Net.WebSockets.WebSocketMessageType.Binary, true, default).ConfigureAwait(false);
-
-            adbClient.RemoveForward(deviceData, 9000);
+            adbClient.ExecuteRemoteCommand($"rm /sdcard/Android/data/com.melonloader.installer/files/temp/adbbridge.txt", deviceData, receiver);
 
             mainForm.statusText.Text = "COMPLETE+DISCONNECTED";
 

@@ -105,7 +105,7 @@ public class ApkInstallerHelper {
     protected void HandleBridge() {
         Log.i("MelonLoader", "Using ADBBridge");
 
-        ADBBridgeHelper.AttemptConnect(packageName, new Callable() {
+        ADBBridgeHelper.AttemptConnect(context.getExternalFilesDir(null).toString(), packageName, new Callable() {
             @Override
             public void call() {
                 onActivityResult(1000, 0, null);
@@ -128,7 +128,7 @@ public class ApkInstallerHelper {
         AlertDialog alert = builder.create();
         alert.setCancelable(false);
         alert.show();
-        ADBBridgeHelper.getBridgeSocket().alertDialog = alert;
+        ADBBridgeHelper.SetDialog(alert);
     }
 
     protected void HandleStandard() {

@@ -26,10 +26,7 @@ import com.melonloader.installer.core.FileReaderWriter;
 import com.melonloader.installer.core.ILogger;
 import com.melonloader.installer.core.Main;
 import com.melonloader.installer.core.Properties;
-import com.melonloader.installer.helpers.ApkInstallerHelper;
-import com.melonloader.installer.helpers.ApplicationFinder;
-import com.melonloader.installer.helpers.DependencyDownloader;
-import com.melonloader.installer.helpers.PackageWarningHelper;
+import com.melonloader.installer.helpers.*;
 import com.melonloader.installer.splitapksupport.SplitAPKInstaller;
 
 import java.io.*;
@@ -225,31 +222,12 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 readerWriter = new FileReaderWriter() {
                     @Override
                     public String readFile(String path) {
-                        File file = new File(path);
-                        int length = (int) file.length();
-                        byte[] bytes = new byte[length];
-
-                        try {
-                            FileInputStream in = new FileInputStream(file);
-                            in.read(bytes);
-                            in.close();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-
-                        String contents = new String(bytes);
-                        return contents;
+                        return FileHelper.readFile(path);
                     }
 
                     @Override
                     public void writeFile(String path, String data) {
-                        try {
-                            FileOutputStream stream = new FileOutputStream(path);
-                            stream.write(data.getBytes());
-                            stream.close();
-                        }
-                        catch (Exception ex) {
-                        }
+                        FileHelper.writeFile(path, data);
                     }
                 };
             }});
