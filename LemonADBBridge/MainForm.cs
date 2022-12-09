@@ -31,7 +31,7 @@ namespace LemonADBBridge
             {
                 deviceComboBox.AddItem(device);
             }
-            AllocConsole();
+            //AllocConsole();
         }
 
         [DllImport("kernel32.dll")]

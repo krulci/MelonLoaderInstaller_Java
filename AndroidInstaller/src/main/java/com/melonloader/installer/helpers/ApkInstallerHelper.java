@@ -24,7 +24,7 @@ public class ApkInstallerHelper {
     Activity context;
     String packageName;
     String lastInstallPath;
-    public Boolean uninstallCanceled;
+    public Boolean uninstallCanceled = false;
 
     Integer installLoopCount;
 
