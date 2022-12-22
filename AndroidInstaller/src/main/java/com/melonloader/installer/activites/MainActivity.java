@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 applicationPatched.setTextColor(Color.GREEN);
             }
 
-            applicationPatched.setVisibility(application.patched ? View.VISIBLE : View.GONE);
+            applicationPatched.setVisibility(application.patched || !application.supported ? View.VISIBLE : View.GONE);
 
             if (application.unityVersion == null) {
                 unityVersion.setVisibility(View.GONE);
