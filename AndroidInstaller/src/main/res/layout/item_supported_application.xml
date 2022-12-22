@@ -59,7 +59,7 @@
             android:enabled="false"
 
             android:text="patched"
-            android:textColor="@color/purple_200"
+            android:textColor="#00FF00"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

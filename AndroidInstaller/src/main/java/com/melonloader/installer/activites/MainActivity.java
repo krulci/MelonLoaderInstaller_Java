@@ -110,13 +110,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             applicationName.setText(application.appName);
             applicationIcon.setImageDrawable(application.icon);
 
-            applicationPatched.setVisibility(application.patched ? View.VISIBLE : View.GONE);
             if (!application.supported)
             {
                 applicationPatched.setVisibility(View.VISIBLE);
                 applicationPatched.setText("unsupported");
                 applicationPatched.setTextColor(Color.RED);
             }
+            else {
+                applicationPatched.setVisibility(View.GONE);
+                applicationPatched.setText("patched");
+                applicationPatched.setTextColor(Color.GREEN);
+            }
+
+            applicationPatched.setVisibility(application.patched ? View.VISIBLE : View.GONE);
 
             if (application.unityVersion == null) {
                 unityVersion.setVisibility(View.GONE);
