@@ -26,7 +26,7 @@ public class PackageWarningHelper {
     public static boolean Run() {
         Log.i(TAG, "Retrieving warnings from GitHub");
         try {
-            URL url = new URL("https://raw.githubusercontent.com/TrevTV/MelonLoaderInstaller/master/package_warnings.json");
+            URL url = new URL("https://raw.githubusercontent.com/LemonLoader/MelonLoaderInstaller/master/package_warnings.json");
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();

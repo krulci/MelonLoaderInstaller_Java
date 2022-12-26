@@ -16,7 +16,7 @@ public class DependencyDownloader
     {
         loggerHelper.Log("Retrieving release info from GitHub");
         try {
-            URL url = new URL("https://api.github.com/repos/TrevTV/MelonLoader/releases/latest");
+            URL url = new URL("https://api.github.com/repos/LemonLoader/MelonLoader/releases/latest");
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
