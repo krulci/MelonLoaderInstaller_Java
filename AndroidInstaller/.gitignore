@@ -1,3 +1,6 @@
 /build
 /.cxx
 /src/main/assets/installer_deps.zip
+/release
+/keystore*
+/*.iml
