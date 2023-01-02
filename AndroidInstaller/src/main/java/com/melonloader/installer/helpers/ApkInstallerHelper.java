@@ -19,6 +19,10 @@ import com.melonloader.installer.Callable;
 import com.melonloader.installer.adbbridge.ADBBridgeHelper;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ApkInstallerHelper {
     Activity context;
@@ -137,9 +141,27 @@ public class ApkInstallerHelper {
         ADBBridgeHelper.SetDialog(alert);
     }
 
+    private boolean shouldMoveBack;
+    private Path dataPath;
+    private Path obbPath;
+    private Path newDataPath;
+    private Path newObbPath;
+
     protected void HandleStandard() {
         Log.i("MelonLoader", "Not using ADBBridge");
         context.runOnUiThread(() -> {
+            dataPath = Paths.get("/sdcard/Android/data/" + packageName + "/");
+            obbPath = Paths.get("/sdcard/Android/obb/" + packageName + "/");
+            newDataPath = Paths.get("/sdcard/Android/data/" + packageName + "_LEMON/");
+            newObbPath = Paths.get("/sdcard/Android/obb/" + packageName + "_LEMON/");
+            shouldMoveBack = false;
+            try {
+                Files.move(dataPath, newDataPath);
+                Files.move(obbPath, newObbPath);
+                shouldMoveBack = true;
+            } catch (IOException ignored) {
+            }
+
             pending = Intent.ACTION_DELETE;
 
             Intent intent = new Intent(Intent.ACTION_DELETE);
@@ -162,6 +184,15 @@ public class ApkInstallerHelper {
 
         if (requestCode == 1000)
         {
+            if (shouldMoveBack) {
+                try {
+                    Files.move(newDataPath, dataPath);
+                    Files.move(newObbPath, obbPath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             if (uninstallCanceled && afterInstall != null) {
                 pending = null;
                 next = null;
