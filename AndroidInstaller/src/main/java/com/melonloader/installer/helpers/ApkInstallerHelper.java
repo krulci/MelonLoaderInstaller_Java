@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
@@ -160,13 +161,25 @@ public class ApkInstallerHelper {
                 Files.move(obbPath, newObbPath);
                 shouldMoveBack = true;
             } catch (IOException ignored) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                        .setTitle("Failed to save data!")
+                        .setMessage("Failed to save any data stored in Android/data or Android/obb. This could break some games. Do you want to continue?")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            pending = Intent.ACTION_DELETE;
+
+                            Intent intent = new Intent(Intent.ACTION_DELETE);
+                            intent.setData(Uri.parse("package:" + packageName));
+                            context.startActivityForResult(intent, 1000);
+                        })
+                        .setNegativeButton("No", (dialogInterface, i) -> {
+                            uninstallCanceled = true;
+                            onActivityResult(1000, 0, null);
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.setCancelable(false);
+                alert.show();
             }
-
-            pending = Intent.ACTION_DELETE;
-
-            Intent intent = new Intent(Intent.ACTION_DELETE);
-            intent.setData(Uri.parse("package:" + packageName));
-            context.startActivityForResult(intent, 1000);
         });
     }
 
@@ -188,8 +201,8 @@ public class ApkInstallerHelper {
                 try {
                     Files.move(newDataPath, dataPath);
                     Files.move(newObbPath, obbPath);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                } catch (IOException ignored) {
+                    Toast.makeText(context, "Failed to restore data, check for renamed folders in Android directories!", Toast.LENGTH_LONG).show();
                 }
             }
 
