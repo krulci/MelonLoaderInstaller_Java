@@ -1,6 +1,7 @@
 package com.melonloader.installer.core.steps;
 
 import com.android.apksigner.ApkSignerTool;
+import com.iyxan23.zipalignjava.InvalidZipException;
 import com.melonloader.installer.core.InstallerStep;
 import com.melonloader.installer.core.LogOutputStream;
 
@@ -12,6 +13,8 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
+import com.iyxan23.zipalignjava.ZipAlign;
+
 
 public class Step__60__Sign extends InstallerStep {
     @Override
@@ -74,7 +77,7 @@ public class Step__60__Sign extends InstallerStep {
         }
     }
 
-    private boolean Align(Path path) throws IOException, InterruptedException {
+    private boolean Align(Path path) throws IOException, InvalidZipException {
         // Chances are this is a non-split APK, so it's complaining about there not having a separate lib APK
         if (path == null)
             return true;
@@ -83,31 +86,13 @@ public class Step__60__Sign extends InstallerStep {
 
         String alignedFilename = path.toString() + "-aligned";
 
-        Process process = null;
-        process = Runtime.getRuntime().exec(new String[] {
-                properties.zipAlign,
-                "-v",
-                "-f",
-                "4",
-                path.toString(),
-                alignedFilename
-        });
+        RandomAccessFile zipIn = new RandomAccessFile(path.toFile(), "r");
+        FileOutputStream zipOut = new FileOutputStream(alignedFilename);
 
-        BufferedReader stdInput = new BufferedReader(new
-                InputStreamReader(process.getInputStream()));
+        ZipAlign.alignZip(zipIn, zipOut);
 
-        BufferedReader stdError = new BufferedReader(new
-                InputStreamReader(process.getErrorStream()));
-
-        String s = null;
-        while ((s = stdInput.readLine()) != null) {
-            properties.logger.Log(s);
-        }
-
-        stdInput.close();
-        stdError.close();
-
-        process.waitFor();
+        zipIn.close();
+        zipOut.close();
 
         Files.delete(path);
         Files.move(Paths.get(alignedFilename), path);
