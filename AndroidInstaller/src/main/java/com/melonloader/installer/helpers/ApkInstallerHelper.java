@@ -160,6 +160,12 @@ public class ApkInstallerHelper {
                 Files.move(dataPath, newDataPath);
                 Files.move(obbPath, newObbPath);
                 shouldMoveBack = true;
+
+                pending = Intent.ACTION_DELETE;
+
+                Intent intent = new Intent(Intent.ACTION_DELETE);
+                intent.setData(Uri.parse("package:" + packageName));
+                context.startActivityForResult(intent, 1000);
             } catch (IOException ignored) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context)
                         .setTitle("Failed to save data!")
