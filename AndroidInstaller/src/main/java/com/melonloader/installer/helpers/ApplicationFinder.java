@@ -4,9 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import com.melonloader.installer.UnityApplicationData;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ApplicationFinder {
@@ -21,8 +27,15 @@ public class ApplicationFinder {
         List<UnityApplicationData> applicationDatas = new ArrayList<>();
 
         for (ApplicationInfo packageInfo : packages) {
-            Intent intent = pm.getLaunchIntentForPackage(packageInfo.packageName);
-            if (intent == null || !intent.getComponent().getClassName().contains("UnityPlayerActivity"))
+            File nativeLibDir = Paths.get(packageInfo.nativeLibraryDir).toFile();
+
+            if (!nativeLibDir.exists())
+                continue;
+
+            File[] files = nativeLibDir.listFiles();
+
+            boolean isUnity = Arrays.stream(files).anyMatch(f -> f.getName().contains("libunity.so"));
+            if (!isUnity)
                 continue;
 
             applicationDatas.add(new UnityApplicationData(pm, packageInfo));
