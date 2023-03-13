@@ -152,8 +152,6 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         String unityAssetsLocation = Paths.get(MelonLoaderBase, "temp", "unity.zip").toString();
         String etcLocation = Paths.get(MelonLoaderBase, "temp", "il2cpp_etc.zip").toString();
 
-        String zipAlignLocation = Paths.get(getFilesDir().toString(), "ml-zipalign").toString();
-
         Button patchButton = findViewById(R.id.patchButton);
         Path tempPath = Paths.get(MelonLoaderBase, "temp", application.appName);
 
@@ -190,11 +188,7 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
             else
                 DependencyDownloader.Run(depsLocation, loggerHelper);
 
-            copyAssets("zipalign", zipAlignLocation);
             copyAssets("il2cpp_etc.zip", etcLocation);
-
-            loggerHelper.Log("Preparing Exectables");
-            makeExecutable(zipAlignLocation);
 
             loggerHelper.Log("Starting patch");
 
@@ -218,7 +212,6 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 logger = loggerHelper;
                 dependencies = depsLocation;
                 il2cppEtc = etcLocation;
-                zipAlign = zipAlignLocation;
                 readerWriter = new FileReaderWriter() {
                     @Override
                     public String readFile(String path) {

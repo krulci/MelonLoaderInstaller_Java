@@ -24,8 +24,6 @@ public class Properties {
     public String keystoreName = "cert";
     public String keystorePass = "123456";
 
-    public String zipAlign;
-
     public ILogger logger;
 
     // Repatching stuff
