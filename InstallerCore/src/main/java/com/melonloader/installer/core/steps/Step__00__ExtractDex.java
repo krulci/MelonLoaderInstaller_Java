@@ -27,8 +27,8 @@ public class Step__00__ExtractDex extends InstallerStep {
 
         String patternStr = "classes\\d*\\.dex$";
         try {
-            if (zip.getFileHeader("originalDex/classes.dex") != null) {
-                patternStr = "originalDex\\/" + patternStr;
+            if (zip.getFileHeader("assets/originalDex/classes.dex") != null) {
+                patternStr = "assets/originalDex\\/" + patternStr;
                 properties.hasOriginalDex = true;
             }
         } catch (ZipException e) {

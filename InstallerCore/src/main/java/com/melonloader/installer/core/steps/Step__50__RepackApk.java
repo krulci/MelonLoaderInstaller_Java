@@ -22,7 +22,7 @@ public class Step__50__RepackApk extends InstallerStep {
 
         CopyTo(zipHelper, paths.dexOutput, "*.dex", "");
         if (!properties.hasOriginalDex)
-            CopyTo(zipHelper, paths.dexOriginal, "*.dex", "originalDex");
+            CopyTo(zipHelper, paths.dexOriginal, "*.dex", "assets/originalDex");
 
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "core"), "*.dll", "assets/melonloader/etc");
         CopyTo(zipHelper, Paths.get(paths.dependenciesDir.toString(), "managed"), "*.dll", "assets/melonloader/etc/managed");
