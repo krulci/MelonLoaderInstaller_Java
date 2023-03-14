@@ -1,6 +1,7 @@
 package com.melonloader.installer.activites;
 
 import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -61,8 +62,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(this);
 
-        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},100);
-        requestInstallUnknownSources();
+        tryPermissionRequest();
+    }
+
+    public void tryPermissionRequest() {
+        int canRead = checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+        int canWrite = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (canRead != PackageManager.PERMISSION_GRANTED || canWrite != PackageManager.PERMISSION_GRANTED)
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},100);
     }
 
     public void requestInstallUnknownSources() {
@@ -86,6 +93,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            requestInstallUnknownSources();
+        }
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder
+                    .setTitle("Permissions Issue")
+                    .setMessage("Lemon needs to be granted storage permissions to function!")
+                    .setPositiveButton("Setup", (Installation, p) -> tryPermissionRequest())
+                    .setIcon(android.R.drawable.ic_dialog_alert);
+
+            AlertDialog alert = builder.create();
+            alert.setCancelable(false);
+            alert.show();
+        }
     }
 
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
