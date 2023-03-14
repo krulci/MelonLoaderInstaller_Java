@@ -1,8 +1,8 @@
 package com.melonloader.installer.activites;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.*;
 import androidx.annotation.NonNull;
@@ -62,6 +62,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listview.setOnItemClickListener(this);
 
         requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},100);
+        requestInstallUnknownSources();
+    }
+
+    public void requestInstallUnknownSources() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder
+                .setTitle("Install Permission")
+                .setMessage("Lemon needs permission to install apps from unknown sources to function!")
+                .setPositiveButton("Setup", (Installation, p) -> {
+                    try {
+                        startActivity(new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:com.melonloader.installer")));
+                    } catch (Exception ex) {
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert);
+
+        AlertDialog alert = builder.create();
+        alert.setCancelable(false);
+        alert.show();
     }
 
     @Override
