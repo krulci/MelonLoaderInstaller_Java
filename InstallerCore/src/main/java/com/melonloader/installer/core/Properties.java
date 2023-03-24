@@ -13,6 +13,7 @@ public class Properties {
     public String tempDir;
     public String dependencies;
     public String il2cppEtc;
+    public String unityZip;
 
     public String unityProvider = "https://lemon.sircoolness.dev/android/";
     public String unityVersion;

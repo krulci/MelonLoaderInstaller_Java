@@ -39,7 +39,7 @@ public class PathDefinitions {
         unityBase = Paths.get(base.toString(), "unity");
         unityNativeBase = Paths.get(unityBase.toString(), "Libs");
         unityManagedBase = Paths.get(unityBase.toString(), "Managed");
-        unityZip = Paths.get(base.toString(), "unity.zip");
+        unityZip = Paths.get(properties.unityZip);
 
         keystore = Paths.get(base.toString(), "key.keystore");
     }

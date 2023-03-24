@@ -5,6 +5,8 @@ import com.melonloader.installer.core.InstallerStep;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Step__02__DownloadUnity extends InstallerStep {
     @Override
@@ -12,8 +14,16 @@ public class Step__02__DownloadUnity extends InstallerStep {
         if (properties.unityNativeBase != null && properties.unityManagedBase != null)
             return true;
 
+        String outputPath = paths.unityZip.toString();
+
+        // The data folder check isn't *really* needed but it doesn't hurt
+        if (!outputPath.contains("com.melonloader.installer") && Files.exists(Paths.get(outputPath))) {
+            properties.logger.Log("Using local Unity dependencies!");
+            return true;
+        }
+
         properties.logger.Log("Downloading Unity Dependencies");
-        downloadFile(properties.unityProvider + properties.unityVersion + ".zip", paths.unityZip.toString());
+        downloadFile(properties.unityProvider + properties.unityVersion + ".zip", outputPath);
 
         return true;
     }

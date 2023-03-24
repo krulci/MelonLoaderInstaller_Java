@@ -1,12 +1,17 @@
 package com.melonloader.installer.activites;
 
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.os.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.app.Activity;
@@ -16,10 +21,6 @@ import android.content.res.AssetManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.melonloader.installer.*;
 import com.melonloader.installer.core.FileReaderWriter;
@@ -85,6 +86,13 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
         Main._properties.logger = loggerHelper;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.patch_menu, menu);
+        return true;
+    }
+
     public void CheckWarnings(String targetPackageName)
     {
         String warning = PackageWarningHelper.AvailableWarnings.getOrDefault(targetPackageName, null);
@@ -139,17 +147,35 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
             return true;
         }
 
+        if (id == R.id.action_patch_local_deps) {
+            File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            FileDialog fileDialog = new FileDialog(this, file, ".zip");
+            fileDialog.addFileListener(new FileDialog.FileSelectedListener() {
+                public void fileSelected(File file) {
+                    Log.d(getClass().getName(), "selected file " + file.toString());
+                    StartPatching(file.toString());
+                }
+            });
+            fileDialog.showDialog();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
     protected void StartPatching()
     {
+        StartPatching(Paths.get(getExternalFilesDir(null).toString(), "temp", "unity.zip").toString());
+    }
+
+    protected void StartPatching(String unityDepsPath)
+    {
         loggerHelper.Clear();
 
         String MelonLoaderBase = getExternalFilesDir(null).toString();
 
-        String depsLocation = Paths.get(MelonLoaderBase, "temp", "dependencies.zip").toString();
-        String unityAssetsLocation = Paths.get(MelonLoaderBase, "temp", "unity.zip").toString();
+        String depsLocation = Paths.get(getExternalFilesDir(null).toString(), "temp", "dependencies.zip").toString();
+        String unityAssetsLocation = unityDepsPath;
         String etcLocation = Paths.get(MelonLoaderBase, "temp", "il2cpp_etc.zip").toString();
 
         Button patchButton = findViewById(R.id.patchButton);
@@ -212,6 +238,7 @@ public class ViewApplication extends AppCompatActivity implements View.OnClickLi
                 logger = loggerHelper;
                 dependencies = depsLocation;
                 il2cppEtc = etcLocation;
+                unityZip = unityAssetsLocation;
                 readerWriter = new FileReaderWriter() {
                     @Override
                     public String readFile(String path) {

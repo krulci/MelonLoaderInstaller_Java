@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".activites.ViewApplication">
 
+    <include
+            layout="@layout/item_logger_output"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/applicationDetails"/>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/applicationDetails"
         android:layout_width="0dp"
@@ -50,13 +59,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include
-        layout="@layout/item_logger_output"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/applicationDetails" />
 </androidx.constraintlayout.widget.ConstraintLayout>
