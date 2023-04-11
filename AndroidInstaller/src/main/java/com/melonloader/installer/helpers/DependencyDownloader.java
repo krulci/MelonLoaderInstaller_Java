@@ -20,7 +20,7 @@ public class DependencyDownloader
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
             connection.setRequestMethod("GET");
             int responseCode = connection.getResponseCode();
-            if (responseCode == connection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Create a reader with the input stream reader.
                 BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String inputLine;

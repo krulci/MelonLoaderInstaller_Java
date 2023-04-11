@@ -32,6 +32,7 @@ public class Main {
                 new Step__00__DetectUnityVersion(),
                 new Step__00__ExtractDex(),
                 new Step__02__DownloadUnity(),
+                new Step__03__DownloadNativeLibs(),
                 new Step__05__ExtractDependencies(),
                 new Step__06__ExtractUnityLibs(),
                 new Step__10__PatchDex(),
