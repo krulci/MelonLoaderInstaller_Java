@@ -22,16 +22,7 @@ public class Step__03__DownloadNativeLibs extends InstallerStep {
         try {
             Path path = Paths.get(properties.tempDir, "extraLibraries.zip");
             downloadFile("https://github.com/LemonLoader/NativeLibraries/raw/main/" + packageName + ".zip", path.toString());
-            properties.logger.Log("Extracting Libraries");
 
-            ZipHelper zipHelper = new ZipHelper(path.toString());
-            List<String> files = zipHelper.GetFiles();
-
-            for (String file : files) {
-                zipHelper.QueueExtract(file, Paths.get(paths.dependenciesDir.toString(), "native", file).toString());
-            }
-
-            zipHelper.Extract();
         }
         catch (Exception ex)
         {

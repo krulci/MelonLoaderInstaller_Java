@@ -3,6 +3,7 @@ package com.melonloader.installer.core.steps;
 import com.melonloader.installer.core.InstallerStep;
 import com.melonloader.installer.core.ZipHelper;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -29,6 +30,18 @@ public class Step__05__ExtractDependencies extends InstallerStep {
 
         for (String file : files) {
             zipHelper.QueueExtract(file, Paths.get(paths.dependenciesDir.toString(), file).toString());
+        }
+
+        zipHelper.Extract();
+
+        properties.logger.Log("Extracting Libraries");
+
+        Path libPath = Paths.get(properties.tempDir, "extraLibraries.zip");
+        zipHelper = new ZipHelper(libPath.toString());
+        files = zipHelper.GetFiles();
+
+        for (String file : files) {
+            zipHelper.QueueExtract(file, Paths.get(paths.dependenciesDir.toString(), "native", file).toString());
         }
 
         zipHelper.Extract();
