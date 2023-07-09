@@ -1,4 +1,7 @@
 # [Lemon]Loader Installer
+***DEPRECATED***: Superseded by [MelonLoaderInstaller](https://github.com/LemonLoader/MelonLoaderInstaller)
+
+
 Installs MelonLoader onto APKs
 
 # Licensing/Credits
