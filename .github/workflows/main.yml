@@ -19,8 +19,15 @@ jobs:
         with:
           java-version: '11'
 
-      - name: Set up Android SDK
-        uses: flutter/setup-android@v2
+      - name: Install Android SDK
+        run: |
+          wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O cmdline-tools.zip
+          mkdir android-sdk
+          unzip -q cmdline-tools.zip -d android-sdk
+          export ANDROID_SDK_ROOT=$PWD/android-sdk
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/bin
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT --licenses
+          $ANDROID_SDK_ROOT/cmdline-tools/bin/sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platforms;android-31" "build-tools;31.0.0" "platform-tools"
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
