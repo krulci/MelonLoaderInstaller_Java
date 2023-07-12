@@ -1,0 +1,72 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+
+      - name: Set up Android SDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'sdk'
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.0
+          release_name: Release v1.0.0
+          body: |
+            Release v1.0.0
+          draft: false
+          prerelease: false
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2
+        with:
+          name: Debug APK
+          path: /path/to/apk/app-debug.apk
+
+      - name: Get Release ID
+        id: get_release_id
+        run: echo "::set-output name=release_id::${{ steps.create_release.outputs.id }}"
+
+      - name: Get APK Artifact URL
+        id: get_artifact_url
+        run: |
+          echo "::set-output name=artifact_url::https://github.com/${{ github.repository }}/releases/download/${{ steps.get_release_id.outputs.release_id }}/app-debug.apk"
+
+      - name: Update Release Body
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const artifactUrl = context.payload.outputs.artifact_url;
+            const releaseId = context.payload.outputs.release_id;
+            const octokit = github.getOctokit('${{ secrets.GITHUB_TOKEN }}');
+            const response = await octokit.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              body: `Release v1.0.0\n\n[Download Debug APK](${artifactUrl})`
+            });
+            console.log(response);
