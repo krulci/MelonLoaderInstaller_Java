@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
+          distribution: 'adopt'
 
       - name: Set up Android SDK
         run: |
@@ -65,3 +66,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const artifactUrl = context.payload.outputs.artifact_url;
+            const releaseId = context.payload.outputs.release_id;
+            const octokit = github.getOctokit('${{ secrets.GITHUB_TOKEN }}');
+            const response = await octokit.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              body: `Release v1.0.0\n\n[Download Debug APK](${artifactUrl})`
+            });
+            console.log(response);
