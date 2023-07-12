@@ -20,10 +20,9 @@ jobs:
           java-version: '11'
 
       - name: Set up Android SDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-android@v2
         with:
-          java-version: '11'
-          distribution: 'sdk'
+          sdk-version: '31'
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
